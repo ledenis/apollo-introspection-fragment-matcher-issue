@@ -1,14 +1,40 @@
 const { GraphQLServer } = require('graphql-yoga')
 
 const typeDefs = `
+  interface Character {
+    name: String
+  }
+
+  type Droid implements Character {
+    name: String
+    primaryFunction: String
+  }
+
+  type Human implements Character {
+    name: String
+    height: Float
+  }
+
   type Query {
-    hello(name: String): String
+    characters: [Character]
   }
 `
 
 const resolvers = {
   Query: {
-    hello: (_, args) => `Hello ${args.name || 'World'}!`,
+    characters: () => {
+      return [
+        {
+          primaryFunction: `Astromech`,
+        },
+        {
+          height: `1.8`,
+        },
+      ];
+    },
+  },
+  Character: {
+    __resolveType: obj => obj.primaryFunction ? 'Droid' : 'Human',
   },
 }
 
